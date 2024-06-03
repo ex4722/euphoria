@@ -12,8 +12,8 @@
 #include "linux/miscdevice.h"
 
 #include "euphoria.h"
+#include "utils.h"
 
-MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Eddie");
 MODULE_DESCRIPTION("A simple utils kernel module");
 
@@ -32,12 +32,14 @@ struct miscdevice euphoria_misc = {
 };
 
 static int __init euphoria_start(void){
+	printk(KERN_ALERT "Loading euphoria module\n");
 	pr_info("Loading euphoria module\n");
     if(misc_register(&euphoria_misc) != 0){
         pr_info("Unable to registger misc device\n");
         return -1;
     }else{
-        pr_info("Register Euphoria Misc Device Successful\n");
+        // pr_info("Register Euphoria Misc Device Successful\n");
+        printk(KERN_ALERT "Register Euphoria Misc Device Successful\n");
         return 0;
     }
 }
@@ -57,9 +59,10 @@ int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
 }
 
 long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
+    pr_info("cmd: %d param: 0x%lx\n", cmd, param);
     switch(cmd){
         case EUPHORIA_PFN: 
-            break;
+            return get_pfn(param);
         case EUPHORIA_GET_FD:
             break;
         case EUPHORIA_TESTING:
@@ -72,3 +75,5 @@ long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
 
 module_init(euphoria_start);
 module_exit(euphoria_end);
+
+MODULE_LICENSE("GPL");
