@@ -1,7 +1,5 @@
 #include "asm/current.h"
 #include "asm/memory.h"
-#include "asm/pgtable-hwdef.h"
-#include "asm/pgtable-prot.h"
 #include "asm/pgtable.h"
 #include "linux/mm.h"
 #include "linux/mm_types.h"
@@ -109,7 +107,7 @@ uint64_t get_pfn(uint64_t address){
     pud_t *pud;
     pmd_t *pmd;
     pte_t *pte;
-    uint64_t pfn;
+    uint64_t physical_address;
     void * virtual_address;
 
     int pgd_idx = (address >> PGDIR_SHIFT) & 0x1ff;
@@ -117,44 +115,36 @@ uint64_t get_pfn(uint64_t address){
     int pmd_idx = (address >> PMD_SHIFT) & 0x1ff;
     int pte_idx = (address >> PAGE_SHIFT) & 0x1ff;
 
-    walk_page_table(current->mm, address);
-    address &= 0xfffffffffffff000;
-    pr_info("Looking up addr 0x%llx\n", address);
-
-    pr_info("user to va 0x%lx\n", user_va_to_pa(address));
-    pr_info("phyis to virt 0x%lx\n", phys_to_virt(user_va_to_pa(address)));
-    
+    // address &= 0xfffffffffffff000;
 
     pgd = current->mm->pgd + pgd_idx;
-    pr_info("PGD at 0x%px with value %llx\n", pgd, *pgd);
+    pr_info("PGD at 0x%px with value 0x%llx\n", pgd, *pgd);
 
     pud = phys_to_virt((*(uint64_t*)pgd & PAGE_MASK));
     pud += pud_idx;
-    pr_info("PUD at 0x%px with value %llx\n", pud, *pud);
+    pr_info("PUD at 0x%px with value 0x%llx\n", pud, *pud);
 
 
     pmd = phys_to_virt((*(uint64_t*)pud & PAGE_MASK));
     pmd += pmd_idx;
-    pr_info("PMD at 0x%px with value %llx\n", pmd, *pmd);
+    pr_info("PMD at 0x%px with value 0x%llx\n", pmd, *pmd);
 
     pte = phys_to_virt((*(uint64_t*)pmd & PAGE_MASK) );
     pte += pte_idx;
-    pr_info("PTE at 0x%px with value %llx\n", pte, *pte);
+    pr_info("PTE at 0x%px with value 0x%llx\n", pte, *pte);
 
 
-    pfn = (address & 0xfff) + ((*pte).pte & ((1ull << 50) -1 )& 0xffffffffffff000ull) ;
-    pr_info("PFN at 0x%llx\n", pfn);
+    physical_address = (address & 0xfff) + ((*pte).pte & ((1ull << 50) -1 )& 0xffffffffffff000ull) ;
 
-    virtual_address = phys_to_virt(pfn);
-    pr_info("Virtual Addr at 0x%px with: ", virtual_address );
+    virtual_address = phys_to_virt(physical_address);
+
+    pr_info("Physical Address at 0x%llx, Virtual Addr at 0x%llx with: \n", physical_address, (uint64_t)virtual_address);
 
     if((*pte).pte & PTE_WRITE){
         pr_info("    -writeable");
-    }if ((*pte).pte & PTE_RDONLY){
-        pr_info("    -readonly");
     }if ((*pte).pte & PTE_VALID){
         pr_info("    -valid");
     }
 
-    return 0;
+    return physical_address >> PAGE_SHIFT;
 }
