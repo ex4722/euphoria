@@ -3,6 +3,7 @@
  * @author  Eddie
  * @brief   Simple module to implemnt basic kernel functions like page walks and mmap handlers
 */
+#include "linux/mm.h"
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
