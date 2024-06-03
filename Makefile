@@ -7,7 +7,7 @@ obj-m := fuck.o
 fuck-objs :=  euphoria.o utils.o
 
 # Path to the Linux kernel source tree
-KDIR := /home/cosmo/workspace/perfectclear/linux
+KDIR :=
 
 # Current directory
 PWD := $(shell pwd)
