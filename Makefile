@@ -4,7 +4,7 @@
 obj-m := fuck.o
 
 # List of source files
-fuck-objs :=  euphoria.o utils.o
+fuck-objs :=  euphoria.o utils.o euphoria_mm.o
 
 # Path to the Linux kernel source tree
 KDIR := /home/cosmo/workspace/perfectclear/linux
