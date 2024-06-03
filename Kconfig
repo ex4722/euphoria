@@ -1,0 +1,5 @@
+# Kconfig in drivers/my_driver
+menuconfig MY_DRIVER
+    tristate "Euphoria Module"
+    help
+      Say Y here if you want to enable the Euphoria module.
