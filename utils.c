@@ -1,6 +1,6 @@
 #include "asm/current.h"
-#include "asm/memory.h"
 #include "asm/pgtable.h"
+#include "linux/fdtable.h"
 #include "linux/mm.h"
 #include "linux/mm_types.h"
 #include "linux/sched.h"

@@ -8,10 +8,10 @@
 #include <linux/init.h>
 #include "linux/fdtable.h"
 #include "linux/fs.h"
-#include "linux/highmem.h"
 #include "linux/miscdevice.h"
 
 #include "euphoria.h"
+#include "euphoria_mm.h"
 #include "utils.h"
 
 MODULE_AUTHOR("Eddie");
@@ -55,7 +55,22 @@ int euphoria_open(struct inode *inode, struct file *file){
 }
 
 int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
+    void * page_vm;
+    long int vm_size;
+    int ret;
+    vm_size = vma->vm_end - vma->vm_start;
+    vm_size = 0x2000;
+    pr_info("X_MMAP called with start:0x%lx end:0x%lx length:0x%lx flags:0x%lx\n", vma->vm_start, vma->vm_end, vm_size, vma->vm_flags);
+    page_vm = (void *)alloc_mmap_page(vm_size / PAGE_SIZE);
+
+    pr_info("Mapping page to %llx\n",virt_to_phys((void *)page_vm) >> PAGE_SHIFT );
+    ret = remap_pfn_range(vma,vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT, vm_size, vma->vm_page_prot);
+    if(ret < 0){
+        pr_err("Could not remap the area\n");
+        return -EIO;
+    }
     return 0;
+
 }
 
 long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
