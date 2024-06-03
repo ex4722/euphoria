@@ -64,6 +64,7 @@ long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
         case EUPHORIA_PFN: 
             return get_pfn(param);
         case EUPHORIA_GET_FD:
+            get_file_struct();
             break;
         case EUPHORIA_TESTING:
             break;

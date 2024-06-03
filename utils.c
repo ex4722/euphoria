@@ -56,3 +56,21 @@ uint64_t get_pfn(uint64_t address){
 
     return physical_address >> PAGE_SHIFT;
 }
+void get_file_struct(void){
+    struct file * cur;
+    struct fdtable * fdt;
+    int index;
+
+    fdt = rcu_dereference_check_fdtable((current->files), (current->files)->fdt);
+
+    spin_lock(&current->files->file_lock);
+    pr_info("Current process %s files count %d\n", current->comm, atomic_read(&current->files->count));
+    for(index = 0; index < fdt->max_fds; index++){
+        cur = fdt->fd[index];
+        if(cur == NULL){
+            continue;
+        }
+        pr_info("Filename: %s Inode: %lu refcount: %lu\n", cur->f_path.dentry->d_name.name,cur->f_inode->i_ino, atomic_long_read(&cur->f_count));
+    }
+    spin_unlock(&current->files->file_lock);
+}
