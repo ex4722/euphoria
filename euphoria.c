@@ -19,7 +19,12 @@ MODULE_DESCRIPTION("A simple utils kernel module");
 
 struct file_operations euphoria_fops = {
     .owner = THIS_MODULE,
+    .open = euphoria_open,
+    .mmap = euphoria_mmap,
+    .compat_ioctl = euphoria_ioctl,
+    .unlocked_ioctl = euphoria_ioctl,
 };
+
 struct miscdevice euphoria_misc = {
     .minor = MISC_DYNAMIC_MINOR,
     .name = "euphoria",
@@ -40,6 +45,29 @@ static int __init euphoria_start(void){
 static void __exit euphoria_end(void){
     misc_deregister(&euphoria_misc);
 	pr_info("Euphoria Module Unloaded\n");
+}
+
+int euphoria_open(struct inode *inode, struct file *file){
+    pr_info("Euphoria device opened successfully\n");
+    return 0;
+}
+
+int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
+    return 0;
+}
+
+long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
+    switch(cmd){
+        case EUPHORIA_PFN: 
+            break;
+        case EUPHORIA_GET_FD:
+            break;
+        case EUPHORIA_TESTING:
+            break;
+        default:
+            break;
+    }
+    return 0;
 }
 
 module_init(euphoria_start);
