@@ -8,6 +8,8 @@ struct euphoria_mem {
     int npages;
 };
 unsigned long alloc_mmap_page(int);
-void free_mmap_pages(void *, int);
+void clear_page_reserved(void *, int);
 void euphoria_close_vma(struct vm_area_struct *);
+
+extern const struct vm_operations_struct euphoria_vm_ops;
 #endif

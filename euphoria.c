@@ -61,8 +61,9 @@ int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
     int ret;
     vm_size = vma->vm_end - vma->vm_start;
     vm_size = 0x2000;
-    pr_info("X_MMAP called with start:0x%lx end:0x%lx length:0x%lx flags:0x%lx\n", vma->vm_start, vma->vm_end, vm_size, vma->vm_flags);
+    pr_info("Euphoria MMAP called with start:0x%lx end:0x%lx length:0x%lx flags:0x%lx\n", vma->vm_start, vma->vm_end, vm_size, vma->vm_flags);
     page_vm = (void *)alloc_mmap_page(vm_size / PAGE_SIZE);
+    vma->vm_ops = &euphoria_vm_ops;
 
     pr_info("Mapping page to %llx\n",virt_to_phys((void *)page_vm) >> PAGE_SHIFT );
     ret = remap_pfn_range(vma,vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT, vm_size, vma->vm_page_prot);

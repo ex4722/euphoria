@@ -7,7 +7,7 @@
 struct euphoria_mem euphoria_memory;
 
 
-static const struct vm_operations_struct vm_ops = {
+const struct vm_operations_struct euphoria_vm_ops = {
     .close = euphoria_close_vma,
     // Other operations
 };

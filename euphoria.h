@@ -14,3 +14,4 @@
 int euphoria_mmap(struct file *, struct vm_area_struct *);
 int euphoria_open(struct inode *, struct file *);
 long euphoria_ioctl(struct file *, unsigned int, unsigned long);
+
