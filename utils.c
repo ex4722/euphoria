@@ -26,20 +26,20 @@ uint64_t get_pfn(uint64_t address){
     int pte_idx = (address >> PAGE_SHIFT) & 0x1ff;
 
     pgd = current->mm->pgd + pgd_idx;
-    pr_info("PGD at 0x%px with value 0x%llx\n", pgd, *pgd);
+    pr_info("PGD at 0x%px with value 0x%llx\n", pgd, (*pgd).pgd);
 
     pud = phys_to_virt((*(uint64_t*)pgd & PAGE_MASK));
     pud += pud_idx;
-    pr_info("PUD at 0x%px with value 0x%llx\n", pud, *pud);
+    pr_info("PUD at 0x%px with value 0x%llx\n", pud, (*pud).pud);
 
 
     pmd = phys_to_virt((*(uint64_t*)pud & PAGE_MASK));
     pmd += pmd_idx;
-    pr_info("PMD at 0x%px with value 0x%llx\n", pmd, *pmd);
+    pr_info("PMD at 0x%px with value 0x%llx\n", pmd, (*pmd).pmd);
 
     pte = phys_to_virt((*(uint64_t*)pmd & PAGE_MASK) );
     pte += pte_idx;
-    pr_info("PTE at 0x%px with value 0x%llx\n", pte, *pte);
+    pr_info("PTE at 0x%px with value 0x%llx\n", pte, (*pte).pte);
 
 
     physical_address = (address & 0xfff) + ((*pte).pte & ((1ull << 50) -1 )& 0xffffffffffff000ull) ;

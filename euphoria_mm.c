@@ -50,9 +50,10 @@ void euphoria_close_vma(struct vm_area_struct *vma){
 
 }
 
-// Alloctes one page at address with no backing and rdwd permissions
+// Alloctes one page at address with no vma and rdwd permissions
 void euphoria_create_backing_without_vma(uint64_t address){
         struct vm_area_struct *vma;
+        void * page_vm;
         vma = kzalloc(sizeof(*vma), GFP_KERNEL);
         vma->vm_start = address;
         vma->vm_end = address+ PAGE_SIZE;
@@ -63,7 +64,7 @@ void euphoria_create_backing_without_vma(uint64_t address){
         vma->vm_page_prot.pgprot &= ~(1 << 7);
         vma->vm_flags = VM_READ | VM_WRITE | VM_MAYREAD | VM_MAYWRITE | VM_PFNMAP | VM_SHARED;
 
-        void * page_vm = (void *)alloc_mmap_page(1);
-        pr_info("vma start aka param is at 0x%lx with page frame number at 0x%llx Page Prot: %x\n", vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT , vma->vm_page_prot);
+        page_vm = (void *)alloc_mmap_page(1);
+        pr_info("vma start aka param is at 0x%lx with page frame number at 0x%llx Page Prot: %llx\n", vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT , vma->vm_page_prot.pgprot);
         remap_pfn_range(vma,vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT, PAGE_SIZE*2, vma->vm_page_prot);
 }
