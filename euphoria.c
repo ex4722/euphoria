@@ -4,6 +4,7 @@
  * @brief   Simple module to implemnt basic kernel functions like page walks and mmap handlers
 */
 #include "linux/mm.h"
+#include "linux/slab.h"
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -39,7 +40,6 @@ static int __init euphoria_start(void){
         pr_info("Unable to registger misc device\n");
         return -1;
     }else{
-        // pr_info("Register Euphoria Misc Device Successful\n");
         printk(KERN_ALERT "Register Euphoria Misc Device Successful\n");
         return 0;
     }
@@ -72,11 +72,26 @@ int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
         return -EIO;
     }
     return 0;
+}
 
+void euphoria_test(unsigned long parm){
+        struct vm_area_struct *vma;
+        vma = kzalloc(sizeof(*vma), GFP_KERNEL);
+        vma->vm_start = parm;
+        vma->vm_end = parm + PAGE_SIZE;
+        vma->vm_mm = current->mm;
+
+        vma->vm_page_prot = pgprot_writecombine(vm_get_page_prot(VM_READ | VM_WRITE | VM_MAYREAD | VM_MAYWRITE | VM_PFNMAP | VM_SHARED));
+        vma->vm_page_prot.pgprot &= ~(1 << 7);
+        vma->vm_flags = VM_READ | VM_WRITE | VM_MAYREAD | VM_MAYWRITE | VM_PFNMAP | VM_SHARED;
+
+        void * page_vm = (void *)alloc_mmap_page(1);
+        pr_info("vma start aka param is at 0x%lx with page frame number at 0x%llx Page Prot: %x\n", vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT , vma->vm_page_prot);
+        remap_pfn_range(vma,vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT, PAGE_SIZE*2, vma->vm_page_prot);
 }
 
 long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
-    pr_info("cmd: %d param: 0x%lx\n", cmd, param);
+    pr_info("cmd: %x param: 0x%lx\n", cmd, param);
     switch(cmd){
         case EUPHORIA_PFN: 
             return get_pfn(param);
@@ -84,7 +99,9 @@ long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
             get_file_struct();
             break;
         case EUPHORIA_TESTING:
+            euphoria_test(param);
             break;
+        case EUPHORIA_NO_BACK:
         default:
             break;
     }

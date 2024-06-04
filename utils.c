@@ -46,13 +46,16 @@ uint64_t get_pfn(uint64_t address){
 
     virtual_address = phys_to_virt(physical_address);
 
-    pr_info("Physical Address at 0x%llx, Virtual Addr at 0x%llx with: \n", physical_address, (uint64_t)virtual_address);
+    pr_info("Physical Address at 0x%llx, Virtual Addr at 0x%llx with flags: %llu\n", physical_address, (uint64_t)virtual_address, (*pte).pte & 0xfff);
 
-    if((*pte).pte & PTE_WRITE){
-        pr_info("    -writeable");
-    }if ((*pte).pte & PTE_VALID){
-        pr_info("    -valid");
-    }
+    if ((*pte).pte & PTE_VALID)      printk(KERN_INFO "  - Valid\n");
+    if ((*pte).pte & PTE_USER)       printk(KERN_INFO "  - User\n");
+    if ((*pte).pte & PTE_RDONLY)     printk(KERN_INFO "  - Readonly\n");
+    if ((*pte).pte & PTE_AF)         printk(KERN_INFO "  - Accessed\n");
+    if ((*pte).pte & PTE_SHARED)     printk(KERN_INFO "  - Shareable\n");
+    if ((*pte).pte & PTE_CONT)       printk(KERN_INFO "  - Contiguous\n");
+    if ((*pte).pte & PTE_PXN)        printk(KERN_INFO "  - Privileged Execute Never (PXN)\n");
+    if ((*pte).pte & PTE_UXN)        printk(KERN_INFO "  - Unprivileged Execute Never (UXN)\n");
 
     return physical_address >> PAGE_SHIFT;
 }
