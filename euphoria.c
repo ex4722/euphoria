@@ -75,20 +75,7 @@ int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
 }
 
 void euphoria_test(unsigned long parm){
-        struct vm_area_struct *vma;
-        void * page_vm;
-        vma = kzalloc(sizeof(*vma), GFP_KERNEL);
-        vma->vm_start = parm;
-        vma->vm_end = parm + PAGE_SIZE;
-        vma->vm_mm = current->mm;
-
-        vma->vm_page_prot = pgprot_writecombine(vm_get_page_prot(VM_READ | VM_WRITE | VM_MAYREAD | VM_MAYWRITE | VM_PFNMAP | VM_SHARED));
-        vma->vm_page_prot.pgprot &= ~(1 << 7);
-        vma->vm_flags = VM_READ | VM_WRITE | VM_MAYREAD | VM_MAYWRITE | VM_PFNMAP | VM_SHARED;
-
-        page_vm = (void *)alloc_mmap_page(1);
-        pr_info("vma start aka param is at 0x%lx with page frame number at 0x%llx Page Prot: %llx\n", vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT , vma->vm_page_prot.pgprot);
-        remap_pfn_range(vma,vma->vm_start, virt_to_phys((void *)page_vm) >> PAGE_SHIFT, PAGE_SIZE*2, vma->vm_page_prot);
+    insert_page_entry(parm);
 }
 
 long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
