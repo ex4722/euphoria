@@ -8,6 +8,7 @@
 #define EUPHORIA_GET_FD 0xdeadbeef
 #define EUPHORIA_TESTING 0xcafebabe
 #define EUPHORIA_NO_VMA 0xba11
+#define EUPHORIA_INSERT_PAGE 0x1ee
 
 #undef pr_fmt
 #define pr_fmt(fmt) "[%s:%s] " fmt, KBUILD_MODNAME, __func__

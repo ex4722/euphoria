@@ -75,7 +75,7 @@ int euphoria_mmap(struct file *kfile, struct vm_area_struct *vma){
 }
 
 void euphoria_test(unsigned long parm){
-    insert_page_entry(parm);
+    euphoria_insert_page_entry(parm);
 }
 
 long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
@@ -91,6 +91,9 @@ long euphoria_ioctl(struct file *kfile, unsigned int cmd, unsigned long param){
             break;
         case EUPHORIA_NO_VMA:
             euphoria_create_backing_without_vma(param);
+            break;
+        case EUPHORIA_INSERT_PAGE:
+            euphoria_insert_page_entry(param);
             break;
         default:
             break;

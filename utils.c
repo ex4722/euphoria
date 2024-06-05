@@ -82,7 +82,7 @@ void get_file_struct(void){
 
 // shitty version of remap_pfn_range
 // currently it maps in page at the addres provided that is one page, page is rw
-uint64_t insert_page_entry(uint64_t address){
+uint64_t euphoria_insert_page_entry(uint64_t address){
     pgd_t *pgd;
     pud_t *pud;
     pmd_t *pmd;
